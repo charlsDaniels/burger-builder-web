@@ -1,5 +1,5 @@
 import * as actionTypes from './actionTypes';
-import axios from '../../axios-laravel';
+import axios from 'axios';
 
 export const authStart = () => {
   return {
@@ -24,8 +24,7 @@ export const authFail = (error) => {
 
 export const logout = () => {
   localStorage.removeItem('token');
-  localStorage.removeItem('userId');
-  // localStorage.removeItem('expirationDate')
+  localStorage.removeItem('expirationDate')
   return {
     type: actionTypes.AUTH_LOGOUT
   }
@@ -45,33 +44,24 @@ export const auth = (email, password, isSignUp) => {
     const authData = {
       email: email,
       password: password,
-      // returnSecureToken: true
+      returnSecureToken: true
     }
-    let url = '/register';
+    let url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyB9Y_w1qbWMmLWBgNsL1wBQ7RHoNgqayCI';
     if (!isSignUp) {
-      url = '/login';
+      url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyB9Y_w1qbWMmLWBgNsL1wBQ7RHoNgqayCI';
     }
-    axios.get('/sanctum/csrf-cookie')
-    .then(response => {
-      axios.post(url, authData)
+    axios.post(url, authData)
       .then(response => {
-        console.log(response)
-        // const expirationDate = new Date(new Date().getTime() + response.data.expiresIn * 1000);
-        localStorage.setItem('token', response.data.token);
-        // localStorage.setItem('expirationDate', expirationDate);
-        localStorage.setItem('userId', response.data.user.id);
-        // dispatch(checkAuthExpiration(response.data.expiresIn));
-        // dispatch(authSuccess(response.data.idToken, response.data.localId));
+        const expirationDate = new Date(new Date().getTime() + response.data.expiresIn * 1000);
+        localStorage.setItem('token', response.data.idToken);
+        localStorage.setItem('expirationDate', expirationDate);
+        localStorage.setItem('userId', response.data.localId);
+        dispatch(checkAuthExpiration(response.data.expiresIn));
+        dispatch(authSuccess(response.data.idToken, response.data.localId));
       })
       .catch(err => {
-        dispatch(authFail(err.response.data.message));
+        dispatch(authFail(err.response.data.error));
       })
-    })
-    .catch(err => {
-      console.log(err)
-    })
-
-    
   }
 }
 
