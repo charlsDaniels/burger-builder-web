@@ -12,6 +12,19 @@ import { updateObject, checkValidity } from '../../shared/utility';
 class Auth extends Component {
     state = {
       controls: {
+        username: {
+          elementType: 'input',
+          elementConfig: {
+              type: 'text',
+              placeholder: 'Username'
+          },
+          value: '',
+          validation: {
+              required: true,
+          },
+          valid: false,
+          touched: false
+        },
         email: {
           elementType: 'input',
           elementConfig: {
@@ -41,7 +54,7 @@ class Auth extends Component {
         touched: false
       },
     },
-    isSingUp: true
+    isSignup: true
   }
 
   componentDidMount() {
@@ -63,22 +76,28 @@ class Auth extends Component {
 
   submitHandler = (event) => {
     event.preventDefault();
-    this.props.onAuth(this.state.controls.email.value, this.state.controls.password.value, this.state.isSingUp);
+    this.props.onAuth(
+      this.state.controls.email.value, 
+      this.state.controls.password.value, 
+      this.state.controls.password.value, 
+      this.state.isSignup
+    );
   }
 
   switchAuthModeHandler = () => {
     this.setState(prevState => {
-      return {isSingUp: !prevState.isSingUp}
+      return {isSignup: !prevState.isSignup}
     })
   }
 
   render () {
     const formElementsArray = []
     for (let key in this.state.controls) {
-      formElementsArray.push({
-          id: key,
-          config: this.state.controls[key]
-      })
+      if (this.state.isSignup || key !== 'username')
+        formElementsArray.push({
+            id: key,
+            config: this.state.controls[key]
+        })
     }
 
     let form = formElementsArray.map(formElement => (
@@ -114,14 +133,14 @@ class Auth extends Component {
       <div className={classes.Auth}>
         {authRedirect}
         {errorMessage}
-        <h3>{this.state.isSingUp ? 'SIGN UP' : 'SIGN IN'}</h3>
+        <h3>{this.state.isSignup ? 'SIGN UP' : 'SIGN IN'}</h3>
         <form onSubmit={this.submitHandler}>
           {form}
           <Button btnType="Success" >SUBMIT</Button>
         </form>
         <Button 
           clicked={this.switchAuthModeHandler}
-          btnType="Danger" >SWITCH TO {this.state.isSingUp ? 'SIGN IN' : 'SIGN UP'}</Button>
+          btnType="Danger" >SWITCH TO {this.state.isSignup ? 'SIGN IN' : 'SIGN UP'}</Button>
       </div>
     );
   }
@@ -131,7 +150,7 @@ const mapStateToProps = state => {
   return {
       error: state.order.error,
       loading: state.order.loading,
-      isAuthenticaded: state.auth.token,
+      isAuthenticaded: state.auth.token !== null,
       buildingBurger: state.burgerBuilder.building,
       authRedirectPath: state.auth.authRedirectPath
   }
@@ -139,7 +158,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onAuth: (email, password, isSignUp) => dispatch(actions.auth(email, password, isSignUp)),
+    onAuth: (email, password, username, isSignup) => dispatch(actions.auth(email, password, username, isSignup)),
     onSetAuthRedirectPath: () => dispatch(actions.setAuthRedirectPath('/'))
   }
 }

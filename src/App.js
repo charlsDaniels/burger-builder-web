@@ -10,16 +10,11 @@ import Checkout from './containers/Checkout/Checkout';
 import Auth from './containers/Auth/Auth';
 import Logout from './containers/Auth/Logout/Logout';
 
-import * as actions from './store/actions/index';
-
 // const asyncOrders = asyncComponent(() => {
 //   return import('./containers/Orders/Orders');
 // })
 
 class App extends Component {
-  componentDidMount() {
-    this.props.onTryAutoSignup()
-  }
 
   render() {
     let routes = (
@@ -59,10 +54,5 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    onTryAutoSignup: () => dispatch(actions.authCheckState())
-  }
-}
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
+export default withRouter(connect(mapStateToProps)(App));
