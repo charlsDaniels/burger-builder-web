@@ -79,7 +79,7 @@ class Auth extends Component {
     this.props.onAuth(
       this.state.controls.email.value, 
       this.state.controls.password.value, 
-      this.state.controls.password.value, 
+      this.state.controls.username.value, 
       this.state.isSignup
     );
   }
@@ -138,9 +138,12 @@ class Auth extends Component {
           {form}
           <Button btnType="Success" >SUBMIT</Button>
         </form>
+
+        <h3>{this.state.isSignup ? 'Do you have a user?' : 'Don\'t you have a user?'}</h3>
+
         <Button 
           clicked={this.switchAuthModeHandler}
-          btnType="Danger" >SWITCH TO {this.state.isSignup ? 'SIGN IN' : 'SIGN UP'}</Button>
+          btnType="Danger" >{this.state.isSignup ? 'SIGN IN' : 'SIGN UP'}</Button>
       </div>
     );
   }

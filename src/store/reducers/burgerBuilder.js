@@ -3,6 +3,7 @@ import { updateObject } from '../../shared/utility';
 
 const initialState = {
   ingredients: null,
+  controls: null,
   totalPrice: 4,
   error: false,
   building: false
@@ -38,8 +39,12 @@ const removeIngredient = (state, action) => {
 };
 
 const setIngredients = (state, action) => {
+  const ingredients = {} 
+  action.ingredients.forEach(ing => {
+    ingredients[ing] = 0
+  })
   const updatedState = {
-    ingredients: action.ingredients,
+    ingredients: ingredients,
     totalPrice: 4,
     error: false,
     building: false
@@ -51,12 +56,26 @@ const fetchIngredientsFailed = (state, action) => {
   return updateObject(state, { error: true });
 }
 
+const setControls = (state, action) => {
+  const controls = action.ingredients.map(ing => {
+    return {
+      label: ing.charAt(0).toUpperCase() + ing.substr(1).toLowerCase(), 
+      type: ing
+    }
+  })
+  const updatedState = {
+    controls: controls
+  }
+  return updateObject(state, updatedState);
+}
+
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.ADD_INGREDIENT: return addIngredient(state, action)
     case actionTypes.REMOVE_INGREDIENT: return removeIngredient(state, action)
     case actionTypes.SET_INGREDIENTS: return setIngredients(state, action)
     case actionTypes.FETCH_INGREDIENTS_FAILED: return fetchIngredientsFailed(state, action)
+    case actionTypes.SET_CONTROLS: return setControls(state, action)
     default:
       return state;
   }

@@ -63,11 +63,12 @@ class BurgerBuilder extends Component {
         let orderSummary = null;
         let burger = this.props.error ? <p>Ingredients can't be loaded!</p> : <Spinner />;
 
-        if ( this.props.ings ) {
+        if ( this.props.ings && this.props.controls) {
             burger = (
                 <Aux>
                     <Burger ingredients={this.props.ings} />
                     <BuildControls
+                        controls={this.props.controls}
                         ingredientAdded={this.props.onIngredientAdded}
                         ingredientRemoved={this.props.onIngredientRemoved}
                         disabled={disabledInfo}
@@ -100,6 +101,7 @@ const mapStateToProps = state => {
         ings: state.burgerBuilder.ingredients,
         price: state.burgerBuilder.totalPrice,
         error: state.burgerBuilder.error,
+        controls: state.burgerBuilder.controls,
         isAuthenticated: state.auth.token
     }
 };
